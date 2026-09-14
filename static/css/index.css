@@ -1,0 +1,89 @@
+/* 文章列表容器 */
+.posts-section {
+    background: #fff;
+    padding: 30px;
+    border-radius: 4px;
+}
+
+/* 首页样式 */
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #FF6600;
+}
+.post-item {
+    padding: 15px 0;
+    border-bottom: 2px solid #e0e0e0;
+}
+.post-item:last-child {
+    border-bottom: none;
+}
+.post-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.post-title a {
+    color: #333;
+}
+.post-title a:hover {
+    color: #FF6600;
+}
+.post-meta {
+    color: #999;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+.post-meta span {
+    margin-right: 20px;
+}
+.post-summary {
+    color: #666;
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.pagination {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+    padding: 20px 0;
+}
+.pagination a, .pagination span {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #fff;
+    color: #333;
+    border: 1px solid #eee;
+    font-size: 14px;
+    border-radius: 4px;
+}
+.pagination a:hover {
+    border-color: #FF6600;
+    color: #FF6600;
+}
+.pagination .active {
+    background: #FF6600;
+    border-color: #FF6600;
+    color: #fff;
+}
+.empty-state {
+    padding: 60px 20px;
+    color: #999;
+}
+
+@media (max-width: 768px) {
+    .post-item {
+        padding: 15px 0;
+    }
+    .post-title {
+        font-size: 18px;
+    }
+}

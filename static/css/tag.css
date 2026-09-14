@@ -1,0 +1,46 @@
+/* 标签文章列表页样式 */
+.post-item {
+    background: #fff;
+    padding: 30px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+.post-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.post-meta {
+    color: #999;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+.post-meta span {
+    margin-right: 15px;
+}
+.post-summary {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 12px;
+}
+.read-more {
+    color: #FF6600;
+    font-size: 14px;
+}
+.read-more:hover {
+    text-decoration: underline;
+}
+.empty-state {
+    background: #fff;
+    padding: 60px 20px;
+    text-align: left;
+    color: #999;
+    border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+    .post-item {
+        padding: 20px;
+    }
+}

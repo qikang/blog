@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.SiteName}} - 文章归档</title>
+    <link rel="icon" type="image/jpeg" href="/static/images/p.jpg">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/archives.css">
+</head>
+<body>
+    <!-- 整体布局：左侧导航 + 右侧内容 -->
+    <div class="layout">
+        {{template "_sidebar.html" .}}
+
+        <!-- 右侧内容 -->
+        <main class="main-content">
+            <!-- 页面头部 -->
+            <div class="page-header">
+                <h1>文章归档</h1>
+                <p>共 {{.TotalCount}} 篇文章</p>
+            </div>
+
+            <!-- 存档列表 -->
+            <div class="archive-section">
+                {{range $year, $posts := .Archive}}
+                <h2 class="archive-year">{{$year}}</h2>
+                {{range $posts}}
+                <div class="archive-post">
+                    <span class="archive-date">{{.Date.Format "01-02"}}</span>
+                    <a href="/post/{{.Slug}}" class="archive-title">{{.Title}}</a>
+                </div>
+                {{end}}
+                {{end}}
+
+                <!-- 分页 -->
+                <div class="pagination">
+                    {{if .HasPrev}}
+                    <a href="/archives?page={{.PrevPage}}">上一页</a>
+                    {{else}}
+                    <a class="disabled">上一页</a>
+                    {{end}}
+
+                    {{range .PageNumbers}}
+                    <a href="/archives?page={{.Number}}" {{if .IsActive}}class="active"{{end}}>{{.Number}}</a>
+                    {{end}}
+
+                    {{if .HasNext}}
+                    <a href="/archives?page={{.NextPage}}">下一页</a>
+                    {{else}}
+                    <a class="disabled">下一页</a>
+                    {{end}}
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+/* 关于页样式 */
+.about-content {
+    background: #fff;
+    padding: 40px 50px;
+    border-radius: 4px;
+}
+.about-content h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 30px 0 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #FF6600;
+}
+.about-content h2:first-child {
+    margin-top: 0;
+}
+.about-content ul {
+    padding-left: 20px;
+}
+.about-content li {
+    margin-bottom: 8px;
+    color: #666;
+}
+.about-content p {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .about-content {
+        padding: 25px 20px;
+    }
+}

@@ -1,0 +1,26 @@
+{{$currentPath := .CurrentPath}}
+{{$currentPage := .CurrentPage}}
+{{if eq .CurrentPage "post"}}
+    {{$currentPage = .FromPage}}
+{{end}}
+<!-- 左侧导航 -->
+<aside class="sidebar-nav">
+    <div class="sidebar-nav-inner">
+        <!-- 头像区域 -->
+        <div class="avatar-container">
+            <div class="avatar-wrapper">
+                <img src="/static/images/p.jpg" alt="头像" class="avatar-img">
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-item{{if eq $currentPage "home"}} active{{end}}">最新文章</a>
+            <a href="/archives" class="nav-item{{if eq $currentPage "archives"}} active{{end}}">文章归档</a>
+            <a href="/tags" class="nav-item{{if or (eq .CurrentPage "tags") (eq .CurrentPage "tag")}} active{{end}}">标签列表</a>
+            <a href="/about" class="nav-item{{if eq .CurrentPage "about"}} active{{end}}">关于我</a>
+        </nav>
+        <!-- 底部 -->
+        <footer class="site-footer">
+        本站代码由<span class="ai-text">AI</span>生成
+        </footer>
+    </div>
+</aside>

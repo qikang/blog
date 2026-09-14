@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.SiteName}}</title>
+    <link rel="icon" type="image/jpeg" href="/static/images/p.jpg">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+<body>
+    <!-- 整体布局：左侧导航 + 右侧内容 -->
+    <div class="layout">
+        {{template "_sidebar.html" .}}
+
+        <!-- 右侧内容 -->
+        <main class="main-content">
+            <!-- 页面头部 -->
+            <div class="page-header">
+                <h1>最新文章</h1>
+                {{if .LatestUpdate}}<p>最后更新 : {{.LatestUpdate}}</p>{{end}}
+            </div>
+
+            <!-- 文章列表 -->
+            <div class="posts-section">
+            {{if .Posts}}
+                {{range .Posts}}
+                <article class="post-item">
+                    <h2 class="post-title">
+                        <a href="/post/{{.Slug}}">{{.Title}}</a>
+                    </h2>
+                    <div class="post-meta">
+                        <span>{{.Date.Format "2006-01-02"}}</span>
+                        <span>{{.Author}}</span>
+                    </div>
+                    <div class="post-summary">
+                        {{.Summary}}
+                    </div>
+                    {{if .Tags}}
+                    <div class="post-tags">
+                        {{range .Tags}}
+                        <a href="/tag/{{.}}" class="tag">{{.}}</a>
+                        {{end}}
+                    </div>
+                    {{end}}
+                </article>
+                {{end}}
+            {{else}}
+                <div class="empty-state">
+                    <p>暂无文章</p>
+                </div>
+            {{end}}
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

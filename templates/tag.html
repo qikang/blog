@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.SiteName}} - 标签: {{.Tag}}</title>
+    <link rel="icon" type="image/jpeg" href="/static/images/p.jpg">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/tag.css">
+</head>
+<body>
+    <!-- 整体布局：左侧导航 + 右侧内容 -->
+    <div class="layout">
+        {{template "_sidebar.html" .}}
+
+        <!-- 右侧内容 -->
+        <main class="main-content">
+            <!-- 页面头部 -->
+            <div class="page-header">
+                <h1>{{.Tag}}</h1>
+                <p>共 {{len .Posts}} 篇文章</p>
+            </div>
+
+            <!-- 文章列表 -->
+            {{if .Posts}}
+                {{range .Posts}}
+                <article class="post-item">
+                    <h2 class="post-title">
+                        <a href="/post/{{.Slug}}">{{.Title}}</a>
+                    </h2>
+                    <div class="post-meta">
+                        <span>{{.Date.Format "2006-01-02"}}</span>
+                        <span>{{.Author}}</span>
+                    </div>
+                    <div class="post-summary">
+                        {{.Summary}}
+                    </div>
+                    <a href="/post/{{.Slug}}" class="read-more">阅读全文</a>
+                </article>
+                {{end}}
+            {{else}}
+                <div class="empty-state">
+                    <p>暂无文章</p>
+                </div>
+            {{end}}
+        </main>
+    </div>
+
+</body>
+</html>

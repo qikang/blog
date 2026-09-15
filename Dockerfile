@@ -1,4 +1,4 @@
-FROM golang:1.23 AS builder
+FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/golang:1.23.8-alpine AS builder
 
 # 设置代理
 RUN go env -w GOPROXY=https://goproxy.cn,direct && \
@@ -15,11 +15,12 @@ RUN go env -w GOPROXY=https://goproxy.cn,direct && \
     CGO_ENABLED=0 GOOS=linux go build -mod=mod -o blog .
 
 # 运行镜像
-FROM alpine:3.22.2
+FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/alpine:3.22.2
 
 WORKDIR /app
 
 # 安装 CA 证书
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add --no-cache ca-certificates tzdata
 
 # 复制构建产物和内容

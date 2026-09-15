@@ -4,46 +4,54 @@ import (
 	"blog/config"
 	"blog/handlers"
 	"blog/router"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 )
 
-func main() {
-	// Load configuration
-	cfg := config.Load()
+// loadInt 从环境变量解析整数,失败时返回 fallback。
+func loadInt(key string, fallback int) int {
+	if v := os.Getenv(key); v != "" {
+		var n int
+		if _, err := fmt.Sscanf(v, "%d", &n); err == nil {
+			return n
+		}
+		log.Printf("环境变量 %s=%q 不是合法整数,使用默认值 %d", key, v, fallback)
+	}
+	return fallback
+}
 
-	// Get site name from environment or use default
+func main() {
+	// 1. 先加载环境变量作为"配置基线"
+	cfg := config.Load()
 	siteName := os.Getenv("SITE_NAME")
 	if siteName == "" {
 		siteName = "西康的博客"
 	}
+	pageSize := loadInt("PAGE_SIZE", 5)
 
-	// Get page size from environment or use default
-	pageSize := 5
-	if ps := os.Getenv("PAGE_SIZE"); ps != "" {
-		if parsed, err := fmt.Sscanf(ps, "%d", &pageSize); parsed != 1 || err != nil {
-			pageSize = 5
-		}
-	}
+	// 2. 命令行 flag 覆盖环境变量(优先级: flag > env > default)
+	flag.StringVar(&cfg.PostsDir, "posts", cfg.PostsDir, "Markdown 文章目录(支持相对/绝对路径)")
+	flag.StringVar(&cfg.Port, "port", cfg.Port, "HTTP 监听地址,例如 :8083")
+	flag.StringVar(&siteName, "site-name", siteName, "站点名称")
+	flag.IntVar(&pageSize, "page-size", pageSize, "首页每页文章数")
+	flag.Parse()
 
-	// Create handler
+	// 3. 构造 handler / router
 	handler := handlers.NewBlogHandler(cfg, siteName, pageSize)
-
-	// Create router
 	r := router.NewRouter(handler, cfg)
 
-	// 中间件链:路由 → 404 跳首页 → 访问日志
+	// 4. 中间件链: 路由 → 404 跳首页 → 访问日志
 	finalRouter := redirect404ToRoot(logRequest(r))
 
-	// Start server
-	addr := cfg.Port
-	log.Printf("Starting server on %s", addr)
+	// 5. 启动服务
+	log.Printf("Starting server on %s", cfg.Port)
 	log.Printf("Site: %s", siteName)
 	log.Printf("Posts directory: %s", cfg.PostsDir)
 
-	if err := http.ListenAndServe(addr, finalRouter); err != nil {
+	if err := http.ListenAndServe(cfg.Port, finalRouter); err != nil {
 		log.Fatal(err)
 	}
 }

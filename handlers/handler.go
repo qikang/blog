@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"blog/assets"
 	"blog/config"
 	"blog/services"
 	"html/template"
@@ -15,15 +16,20 @@ type BlogHandler struct {
 	mdService *services.MarkdownService
 	siteName  string
 	pageSize  int
+	tmpl      *template.Template // 启动时一次性从 embed.FS 解析所有 *.html
 }
 
 // NewBlogHandler creates a new blog handler
 func NewBlogHandler(cfg *config.Config, siteName string, pageSize int) *BlogHandler {
+	// 一次性解析嵌入的 HTML 模板,后续请求直接复用 *Template,避免每次 ParseGlob
+	tmpl := template.Must(template.ParseFS(assets.TemplatesFS, "templates/*.html"))
+
 	return &BlogHandler{
 		config:    cfg,
 		mdService: services.NewMarkdownService(cfg.PostsDir),
 		siteName:  siteName,
 		pageSize:  pageSize,
+		tmpl:      tmpl,
 	}
 }
 
@@ -93,8 +99,7 @@ func (h *BlogHandler) renderTemplate(w http.ResponseWriter, r *http.Request, tmp
 		}
 	}
 
-	tmpl := template.Must(template.ParseGlob(h.config.TemplateDir + "/*.html"))
-	if err := tmpl.ExecuteTemplate(w, tmplName, pageData); err != nil {
+	if err := h.tmpl.ExecuteTemplate(w, tmplName, pageData); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 }

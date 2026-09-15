@@ -6,7 +6,7 @@ services:
     image: blog:latest
     container_name: blog
     ports:
-      - "8083:8083"
+      - "8084:8083"
     environment:
       - PORT=:8083
       - SITE_NAME=技术博客
@@ -14,4 +14,4 @@ services:
       - POSTS_DIR=/app/posts
     volumes:
       - ./posts:/app/posts
-    restart: Always
+    restart: always

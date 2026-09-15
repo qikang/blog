@@ -1,6 +1,7 @@
 package router
 
 import (
+	"blog/config"
 	"blog/handlers"
 	"net/http"
 
@@ -8,7 +9,7 @@ import (
 )
 
 // NewRouter creates a new router
-func NewRouter(handler *handlers.BlogHandler) *mux.Router {
+func NewRouter(handler *handlers.BlogHandler, cfg *config.Config) *mux.Router {
 	router := mux.NewRouter()
 
 	// API routes - more specific routes first
@@ -22,6 +23,9 @@ func NewRouter(handler *handlers.BlogHandler) *mux.Router {
 
 	// Static files
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+
+	// 文章中相对路径引用的图片等资源,从 posts 目录提供(必须与 Dockerfile 中 COPY 的目录一致)
+	router.PathPrefix("/posts/").Handler(http.StripPrefix("/posts/", http.FileServer(http.Dir(cfg.PostsDir))))
 
 	return router
 }

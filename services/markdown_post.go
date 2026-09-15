@@ -6,9 +6,30 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 )
+
+// imgSrcRe 匹配 <img> 标签中的 src 属性,用于给 markdown 中相对路径的图片加上 /posts/<slug>/ 前缀
+var imgSrcRe = regexp.MustCompile(`(<img\s+[^>]*?\bsrc=")([^"]+)"`)
+
+// rewriteImgSrcs 把渲染后的 HTML 中所有 <img src="..."> 的相对路径加上 prefix。
+// 绝对 URL(http/https/根路径/data:)保持不变,避免重复加前缀或破坏外链。
+func rewriteImgSrcs(htmlStr, prefix string) string {
+	return imgSrcRe.ReplaceAllStringFunc(htmlStr, func(match string) string {
+		sub := imgSrcRe.FindStringSubmatch(match)
+		if len(sub) < 3 {
+			return match
+		}
+		src := sub[2]
+		if src == "" || strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://") ||
+			strings.HasPrefix(src, "/") || strings.HasPrefix(src, "data:") {
+			return match
+		}
+		return sub[1] + prefix + src + `"`
+	})
+}
 
 // GetPostBySlug returns a single post by its slug
 func (s *MarkdownService) GetPostBySlug(slug string) (*models.Post, error) {
@@ -149,7 +170,13 @@ func (s *MarkdownService) ParsePost(filename string) (*models.Post, error) {
 	// Convert markdown to HTML
 	mdContent := strings.Join(markdownContent, "\n")
 	post.Content = mdContent
-	post.HTML = template.HTML(s.MarkdownToHTML(mdContent))
+	// 给文章内相对路径的图片加上 /posts/<目录>/ 前缀,使之命中 router 注册的 /posts/ 静态服务。
+	// 约定:图片与对应 markdown 同目录(顶层 post 对应 posts/,子目录下 post 对应 posts/<子目录>/)。
+	imgPrefix := "/posts/"
+	if dir != "." {
+		imgPrefix = "/posts/" + strings.TrimPrefix(filepath.ToSlash(dir), "./") + "/"
+	}
+	post.HTML = template.HTML(rewriteImgSrcs(s.MarkdownToHTML(mdContent), imgPrefix))
 
 	return post, nil
 }

@@ -32,10 +32,10 @@ func main() {
 	handler := handlers.NewBlogHandler(cfg, siteName, pageSize)
 
 	// Create router
-	r := router.NewRouter(handler)
+	r := router.NewRouter(handler, cfg)
 
-	// Add logging middleware
-	loggedRouter := logRequest(r)
+	// 中间件链:路由 → 404 跳首页 → 访问日志
+	finalRouter := redirect404ToRoot(logRequest(r))
 
 	// Start server
 	addr := cfg.Port
@@ -43,7 +43,7 @@ func main() {
 	log.Printf("Site: %s", siteName)
 	log.Printf("Posts directory: %s", cfg.PostsDir)
 
-	if err := http.ListenAndServe(addr, loggedRouter); err != nil {
+	if err := http.ListenAndServe(addr, finalRouter); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -53,5 +53,30 @@ func logRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s %s %s", r.Method, r.URL.Path, r.RemoteAddr)
 		next.ServeHTTP(w, r)
+	})
+}
+
+// statusRecorder 包装 http.ResponseWriter,记录响应状态码(用于 404 跳转)
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (r *statusRecorder) WriteHeader(code int) {
+	r.status = code
+	r.ResponseWriter.WriteHeader(code)
+}
+
+// redirect404ToRoot 将所有 GET 404 请求 302 跳转到首页。
+// 包括静态文件 / 文章页 / 标签页等任何路径的 404(只对首页自身豁免,避免死循环)。
+func redirect404ToRoot(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rec := &statusRecorder{ResponseWriter: w, status: http.StatusOK}
+		next.ServeHTTP(rec, r)
+		if rec.status == http.StatusNotFound &&
+			r.Method == http.MethodGet &&
+			r.URL.Path != "/" {
+			http.Redirect(w, r, "/", http.StatusFound)
+		}
 	})
 }

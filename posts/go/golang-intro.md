@@ -1,6 +1,6 @@
 ---
 title: Go 语言入门指南
-date: 2026-03-15
+date: 2023-01-15
 author: Go 爱好者
 tags: Go,后端,编程语言
 summary: 详细介绍 Go 语言的基础语法和核心概念，适合初学者入门学习。

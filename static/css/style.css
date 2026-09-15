@@ -51,6 +51,20 @@ a:hover {
     display: flex;
     justify-content: center;
 }
+.avatar-link {
+    display: inline-block;
+    line-height: 0;
+    text-decoration: none;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+.avatar-link:hover {
+    transform: scale(1.05);
+}
+.avatar-link:focus-visible {
+    outline: 2px solid #FF6600;
+    outline-offset: 2px;
+}
 .avatar-wrapper {
     width: 80px;
     height: 80px;

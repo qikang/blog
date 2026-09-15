@@ -23,9 +23,9 @@
 
             <!-- 存档列表 -->
             <div class="archive-section">
-                {{range $year, $posts := .Archive}}
-                <h2 class="archive-year">{{$year}}</h2>
-                {{range $posts}}
+                {{range .Archive}}
+                <h2 class="archive-year">{{.Year}}</h2>
+                {{range .Posts}}
                 <div class="archive-post">
                     <span class="archive-date">{{.Date.Format "01-02"}}</span>
                     <a href="/post/{{.Slug}}" class="archive-title">{{.Title}}</a>
@@ -33,24 +33,76 @@
                 {{end}}
                 {{end}}
 
-                <!-- 分页 -->
-                <div class="pagination">
-                    {{if .HasPrev}}
-                    <a href="/archives?page={{.PrevPage}}">上一页</a>
-                    {{else}}
-                    <a class="disabled">上一页</a>
-                    {{end}}
+                <!-- 每页大小 + 分页,整体右对齐 -->
+                <div class="pagination-row">
+                    <div class="page-size">
+                        <div class="custom-select" id="page-size-select">
+                            <button type="button" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="current-value">{{.PageSize}}条/页</span>
+                                <svg class="arrow" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true">
+                                    <path fill="currentColor" d="M0 0l5 6 5-6z"/>
+                                </svg>
+                            </button>
+                            <ul class="custom-options" role="listbox">
+                                {{range .SizeOptions}}
+                                <li role="option" data-value="{{.}}" data-href="/archives?page=1&size={{.}}" {{if eq $.PageSize .}}class="selected"{{end}}>{{.}}条/页</li>
+                                {{end}}
+                            </ul>
+                        </div>
+                    </div>
 
-                    {{range .PageNumbers}}
-                    <a href="/archives?page={{.Number}}" {{if .IsActive}}class="active"{{end}}>{{.Number}}</a>
-                    {{end}}
+                    <div class="pagination">
+                        {{if .HasPrev}}
+                        <a href="/archives?page={{.PrevPage}}&size={{.PageSize}}">上一页</a>
+                        {{else}}
+                        <a class="disabled">上一页</a>
+                        {{end}}
 
-                    {{if .HasNext}}
-                    <a href="/archives?page={{.NextPage}}">下一页</a>
-                    {{else}}
-                    <a class="disabled">下一页</a>
-                    {{end}}
+                        {{range .PageNumbers}}
+                        <a href="/archives?page={{.Number}}&size={{.Size}}" {{if .IsActive}}class="active"{{end}}>{{.Number}}</a>
+                        {{end}}
+
+                        {{if .HasNext}}
+                        <a href="/archives?page={{.NextPage}}&size={{.PageSize}}">下一页</a>
+                        {{else}}
+                        <a class="disabled">下一页</a>
+                        {{end}}
+                    </div>
                 </div>
+
+                <script>
+                (function () {
+                    var root = document.getElementById('page-size-select');
+                    if (!root) return;
+                    var trigger = root.querySelector('.custom-select-trigger');
+                    var options = root.querySelectorAll('.custom-options li');
+                    // 切换展开
+                    trigger.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        var open = root.classList.toggle('open');
+                        trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    });
+                    // 选项点击 → 跳转
+                    options.forEach(function (li) {
+                        li.addEventListener('click', function () {
+                            var href = li.getAttribute('data-href');
+                            if (href) window.location.href = href;
+                        });
+                    });
+                    // 点外部关闭
+                    document.addEventListener('click', function () {
+                        root.classList.remove('open');
+                        trigger.setAttribute('aria-expanded', 'false');
+                    });
+                    // Esc 关闭
+                    document.addEventListener('keydown', function (e) {
+                        if (e.key === 'Escape') {
+                            root.classList.remove('open');
+                            trigger.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                })();
+                </script>
             </div>
         </main>
     </div>

@@ -52,16 +52,24 @@
 }
 .pagination a {
     display: inline-block;
-    padding: 8px 14px;
+    padding: 6px 12px;
     background: #fff;
     color: #333;
     border: 1px solid #ddd;
-    font-size: 14px;
+    font-size: 13px;
     border-radius: 4px;
     cursor: pointer;
-    min-width: 40px;
+    min-width: 36px;
     text-align: center;
     transition: all 0.2s ease;
+    line-height: 1.2;
+}
+/* 上一页 / 下一页:与 select 等高,更突出 */
+.pagination a:first-child,
+.pagination a:last-child {
+    padding: 8px 18px;
+    font-size: 14px;
+    min-width: 64px;
 }
 .pagination a:hover:not(.disabled) {
     border-color: #FF6600;
@@ -79,4 +87,114 @@
     border-color: #eee;
     background: #f9f9f9;
     cursor: not-allowed;
+}
+
+/* 分页 + 每页大小 行容器 —— 整体右对齐 */
+.pagination-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px 0;
+}
+/* 分页容器在 row 中去掉自身 padding/margin(由 row 统一控制) */
+.pagination-row .pagination {
+    margin-top: 0;
+    padding: 0;
+}
+
+/* 每页大小下拉 */
+.page-size {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #666;
+}
+.page-size label {
+    color: #666;
+    font-size: 14px;
+}
+
+/* 自定义下拉容器 */
+.custom-select {
+    position: relative;
+    display: inline-block;
+}
+/* 触发按钮(外观与原 select 等高) */
+.custom-select-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 30px 8px 12px;
+    height: 37px;
+    box-sizing: border-box;
+    background: #fff;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.custom-select-trigger .arrow {
+    color: #666;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+.custom-select-trigger:hover {
+    border-color: #FF6600;
+    color: #FF6600;
+}
+.custom-select-trigger:hover .arrow {
+    color: #FF6600;
+}
+.custom-select.open .custom-select-trigger {
+    border-color: #FF6600;
+    color: #FF6600;
+    box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.15);
+}
+/* 展开时箭头翻转(视觉上指向下方,因为菜单向上展开) */
+.custom-select.open .custom-select-trigger .arrow {
+    transform: rotate(180deg);
+    color: #FF6600;
+}
+
+/* 选项列表 —— 默认隐藏,展开时显示,且向上展开(bottom:100%) */
+.custom-options {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% + 4px);   /* 弹出到 trigger 上方 */
+    margin: 0;
+    padding: 4px 0;
+    list-style: none;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: none;
+    z-index: 10;
+}
+.custom-select.open .custom-options {
+    display: block;
+}
+.custom-options li {
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.custom-options li:hover {
+    background: #fff5f0;
+    color: #FF6600;
+}
+.custom-options li.selected {
+    background: #FF6600;
+    color: #fff;
+    font-weight: 600;
 }

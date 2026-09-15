@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"time"
 )
 
 // GetAllPosts returns all posts sorted by folder first, then by date (newest first)
@@ -40,56 +39,21 @@ func (s *MarkdownService) GetAllPosts() ([]models.Post, error) {
 		return nil, err
 	}
 
-	// Sort: first by folder (folders first, then files in root), then by date within each group
-	sort.Slice(posts, func(i, j int) bool {
-		// Get category for each post
-		catI := posts[i].Category
-		catJ := posts[j].Category
-
-		// Both have categories - compare by category's latest post date
-		if catI != "" && catJ != "" {
-			if catI != catJ {
-				// Compare by folder's latest post time
-				latestI := getFolderLatestTime(posts, catI)
-				latestJ := getFolderLatestTime(posts, catJ)
-				if !latestI.Equal(latestJ) {
-					return latestI.After(latestJ)
-				}
-				return catI < catJ // Alphabetical if same time
-			}
-			// Same folder - compare by date
-			return posts[i].Date.After(posts[j].Date)
+	// 全部按文章日期倒序排(归档、首页等所有列表都用此排序)
+// 注意 Go 1.21+ 推荐 slices.SortStableFunc,这里保留 sort.Slice + 稳定性的兜底(按 Slug 打破平局)
+	sort.SliceStable(posts, func(i, j int) bool {
+		if posts[i].Date.Equal(posts[j].Date) {
+			// 同一日期内,按 Slug 字典序,保证排序稳定
+			return posts[i].Slug < posts[j].Slug
 		}
-
-		// One has category, one doesn't - folders first
-		if catI != "" && catJ == "" {
-			latestJ := posts[j].Date // Root file's own date
-			latestI := getFolderLatestTime(posts, catI)
-			return latestI.After(latestJ)
-		}
-		if catI == "" && catJ != "" {
-			latestI := posts[i].Date // Root file's own date
-			latestJ := getFolderLatestTime(posts, catJ)
-			return latestI.After(latestJ)
-		}
-
-		// Both in root - compare by date
 		return posts[i].Date.After(posts[j].Date)
 	})
 
 	return posts, nil
 }
 
-// getFolderLatestTime returns the latest date among all posts in a folder
-func getFolderLatestTime(posts []models.Post, folder string) time.Time {
-	var latest time.Time
-	for _, p := range posts {
-		if p.Category == folder && p.Date.After(latest) {
-			latest = p.Date
-		}
-	}
-	return latest
-}
+// getFolderLatestTime 已移除:历史实现里按"分类分组"排序,导致跨分类时日期错乱;
+// 现统一改为整体按文章 Date 倒序。
 
 // GetPagedPosts returns posts with pagination
 func (s *MarkdownService) GetPagedPosts(page, pageSize int) (*models.PostList, error) {

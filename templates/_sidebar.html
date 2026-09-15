@@ -8,9 +8,11 @@
     <div class="sidebar-nav-inner">
         <!-- 头像区域 -->
         <div class="avatar-container">
-            <div class="avatar-wrapper">
-                <img src="/static/images/p.jpg" alt="头像" class="avatar-img">
-            </div>
+            <a href="/" class="avatar-link" aria-label="返回首页">
+                <div class="avatar-wrapper">
+                    <img src="/static/images/p.jpg" alt="头像" class="avatar-img">
+                </div>
+            </a>
         </div>
         <nav class="nav-menu">
             <a href="/" class="nav-item{{if eq $currentPage "home"}} active{{end}}">最新文章</a>

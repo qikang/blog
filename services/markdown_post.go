@@ -104,7 +104,10 @@ func (s *MarkdownService) ParsePost(filename string) (*models.Post, error) {
 				case "title":
 					post.Title = value
 				case "date":
-					post.Date, _ = time.Parse("2006-01-02", value)
+					// 使用本地时区解析,避免跨时区部署时日期偏移一天
+					if t, err := time.ParseInLocation("2006-01-02", value, time.Local); err == nil {
+						post.Date = t
+					}
 				case "author":
 					post.Author = value
 				case "tags":
@@ -128,11 +131,14 @@ func (s *MarkdownService) ParsePost(filename string) (*models.Post, error) {
 		post.Title = strings.TrimSuffix(filepath.Base(filename), ".md")
 	}
 
-	// Use file modification time as the post date
-	if stat, err := os.Stat(filename); err == nil {
-		post.Date = stat.ModTime()
-	} else if post.Date.IsZero() {
-		post.Date = time.Now()
+	// 日期优先级:frontmatter date > 文件修改时间 > 当前时间
+	// (此前实现无条件使用文件 mtime,导致 frontmatter 中的 date 字段被覆盖)
+	if post.Date.IsZero() {
+		if stat, err := os.Stat(filename); err == nil {
+			post.Date = stat.ModTime()
+		} else {
+			post.Date = time.Now()
+		}
 	}
 
 	// Default author

@@ -4,6 +4,8 @@ set -ex
 IMAGE_NAME="blog:latest"
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+docker system prune --all --force --volumes > /dev/null
+
 docker compose down
 
 cd "$PROJECT_DIR"

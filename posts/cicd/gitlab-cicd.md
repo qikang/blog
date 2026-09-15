@@ -1,6 +1,6 @@
 ---
 title: GitLab CI/CD流水线配置详解
-date: 2026-03-08
+date: 2024-03-08
 author: 西康
 tags: [CI/CD, DevOps, GitLab]
 ---

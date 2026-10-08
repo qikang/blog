@@ -52,8 +52,11 @@
     color: #f8f8f2;
     padding: 16px;
     border-radius: 4px;
-    overflow-x: auto;
     margin: 20px 0;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: anywhere;
 }
 .post-content pre code {
     background: none;

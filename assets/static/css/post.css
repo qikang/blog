@@ -22,7 +22,7 @@
     background: #fff;
     padding: 40px 50px;
     font-size: 16px;
-    line-height: 1.8;
+    line-height: 1.5;
 }
 .post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6 {
     margin: 30px 0 15px;
@@ -75,7 +75,8 @@
     margin-bottom: 16px;
 }
 .post-content li {
-    margin-bottom: 8px;
+    /* 行间距完全由全局 line-height 控制，与正文保持一致 */
+    margin-bottom: 0;
 }
 .post-content img {
     max-width: 100%;
@@ -86,13 +87,22 @@
     color: #FF6600;
 }
 .post-content table {
-    width: 100%;
+    /* 表格按内容收缩，避免列被强制拉满到父容器宽度；
+       max-width 兜底防止溢出，溢出时由 .post-content 出现横向滚动条。 */
+    width: auto;
+    max-width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
 }
 .post-content table th, .post-content table td {
     padding: 10px;
     border: 1px solid #eee;
+    white-space: nowrap;
+}
+/* 列少内容紧凑时表格不会撑满，按内容宽度显示；
+   列多内容超出容器时，post-content 出现横向滚动条而不是撑破布局。 */
+.post-content {
+    overflow-x: auto;
 }
 .post-content table th {
     background: #f9f9f9;

@@ -72,10 +72,19 @@
 }
 .post-content ul, .post-content ol {
     padding-left: 24px;
-    margin-bottom: 16px;
+    /* 嵌套 ul 不再加底部 margin,避免父项末尾子列表与下一兄弟 li 之间出现空隙;
+       列表项之间的视觉间距由 li 的 margin-bottom 控制 */
+    margin-bottom: 0;
 }
 .post-content li {
-    /* 行间距完全由全局 line-height 控制，与正文保持一致 */
+    /* 显式锁定行间距,和 .post-content 的 line-height: 1.5 保持一致,
+       防止被全局 reset/normalize 或浏览器默认样式覆盖 */
+    line-height: 1.5;
+    /* li 与下一元素之间的行间距 */
+    margin-bottom: 1.5px;
+}
+.post-content li:last-child {
+    /* 列表末尾不留多余空白,避免段落间过大间距 */
     margin-bottom: 0;
 }
 .post-content img {

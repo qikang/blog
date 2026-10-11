@@ -1,0 +1,37 @@
+# ===== 版本控制 =====
+.git/
+.gitignore
+
+# ===== 本地编译产物(宿主机 blog 二进制,避免污染镜像)=====
+blog
+*.exe
+*.dll
+*.so
+*.dylib
+
+# ===== 文档 / 备份(不参与编译)=====
+*.md
+README.md
+LICENSE
+bak/
+
+# ===== Docker 自身(不需要进构建上下文)=====
+Dockerfile
+docker-compose.yaml
+docker-compose.yml
+.dockerignore
+
+# ===== posts 由 docker-compose 运行时挂载,构建时不需要带进镜像 =====
+posts/
+
+# ===== 资源/缓存目录(避免大文件拖慢构建)=====
+assets/cache/
+
+# ===== 编辑器 / 系统垃圾 =====
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/

@@ -1,0 +1,44 @@
+# Docker Compose v2 —— 构建 + 运行都在同一个文件里声明
+# 一条命令搞定: docker compose up -d --build
+name: blog
+
+services:
+  blog:
+    # ============ 构建配置 ============
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # 强制 amd64,和 Dockerfile 中的 --platform=linux/amd64 双重保险
+      platforms:
+        - linux/amd64
+
+    # ============ 镜像配置(构建后复用)============
+    image: blog:latest
+
+    # ============ 运行配置 ============
+    container_name: blog
+
+    # 把宿主机 posts/ 挂到容器 /app/posts,文章修改即时生效
+    volumes:
+      - ./posts:/app/posts:ro
+
+    # 端口映射:宿主机 8083 -> 容器 8083
+    ports:
+      - "8083:8083"
+
+    # 环境变量覆盖(main.go 中 flag > env > default)
+    environment:
+      PORT: ":8083"            # HTTP 监听地址
+      POSTS_DIR: "./posts"     # Markdown 目录
+      SITE_NAME: "西康的博客"    # 站点名
+      PAGE_SIZE: "5"           # 首页每页文章数
+
+    restart: unless-stopped
+
+    # 简易健康检查
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8083/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
